@@ -1,14 +1,25 @@
 package http
 
 import (
-    "github.com/gin-gonic/gin"
-    "bytecrate/internal/http/handlers"
+	docs "bytecrate/internal/http/docs"
+	"bytecrate/internal/http/handlers"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewRouter() *gin.Engine {
-    r := gin.Default()
+	r := gin.Default()
 
-    r.GET("/health", handlers.HealthCheck)
+	api := r.Group("/api")
+	handlers.RegisterAuthRoutes(api)
+	handlers.RegisterFilesRoutes(api)
+	handlers.RegisterDevRoutes(api)
 
-    return r
+	docs.SwaggerInfo.BasePath = "/api/"
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	return r
 }

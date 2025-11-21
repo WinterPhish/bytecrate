@@ -1,0 +1,13 @@
+info:
+  contact: {}
+paths:
+  /dev/status:
+    get:
+      consumes:
+      - application/json
+      description: Dev test for backend
+      produces:
+      - application/json
+      responses: {}
+      summary: Test for life
+swagger: "2.0"
