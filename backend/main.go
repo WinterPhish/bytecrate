@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bytecrate/internal/http"
+	"bytecrate/internal"
 	"log"
 )
 
 func main() {
-	router := http.NewRouter()
+	router := internal.NewRouter()
 
 	log.Println("Backend running on :8080")
 	router.Run(":8080")

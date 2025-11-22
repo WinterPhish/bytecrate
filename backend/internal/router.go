@@ -1,8 +1,10 @@
-package http
+package internal
 
 import (
-	docs "bytecrate/internal/http/docs"
-	"bytecrate/internal/http/handlers"
+	"bytecrate/internal/auth"
+	"bytecrate/internal/dev"
+	docs "bytecrate/internal/docs"
+	"bytecrate/internal/files"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -13,9 +15,9 @@ func NewRouter() *gin.Engine {
 	r := gin.Default()
 
 	api := r.Group("/api")
-	handlers.RegisterAuthRoutes(api)
-	handlers.RegisterFilesRoutes(api)
-	handlers.RegisterDevRoutes(api)
+	auth.RegisterAuthRoutes(api)
+	files.RegisterFilesRoutes(api)
+	dev.RegisterDevRoutes(api)
 
 	docs.SwaggerInfo.BasePath = "/api/"
 
