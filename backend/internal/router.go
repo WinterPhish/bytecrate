@@ -9,13 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
 	api := r.Group("/api")
-	auth.RegisterAuthRoutes(api)
+	auth.RegisterAuthRoutes(api, db)
 	files.RegisterFilesRoutes(api)
 	dev.RegisterDevRoutes(api)
 
