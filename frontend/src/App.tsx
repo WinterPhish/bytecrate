@@ -1,12 +1,17 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 function App() {
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>ByteCrate</h1>
-      <p>Your cloud storage, Go-powered</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
