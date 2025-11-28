@@ -15,8 +15,10 @@ import (
 
 func NewRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
-	r.Use(cors.Default()) // All origins allowed by default
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"http://localhost:5173"}
 
+	r.Use(cors.New(corsConfig))
 	api := r.Group("/api")
 	auth.RegisterAuthRoutes(api, db)
 	files.RegisterFilesRoutes(api)
