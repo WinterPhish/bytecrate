@@ -1,25 +1,28 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Account from "./pages/Account";
-import Files from "./pages/Files";
-import Upload from "./pages/Upload";
+import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import AccountPage from './pages/Account'
+import Dashboard from './pages/Dashboard'
+import FilesPage from './pages/Files'
+import UploadPage from './pages/Upload'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import HomePage from './pages/Home'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/files" element={<Files />} />
-        <Route path="/upload" element={<Upload />} />
-      </Routes>
-    </BrowserRouter>
-  );
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/account" element={<AccountPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/files" element={<FilesPage />} />
+                <Route path="/upload" element={<UploadPage />} />
+                <Route path="/files" element={<FilesPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+            </Routes>
+        </Router>
+  )
 }
 
-export default App;
+export default App

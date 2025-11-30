@@ -19,7 +19,7 @@ services:
     build: ./frontend
     container_name: bytecrate-frontend
     volumes:
-      - ./frontend/src:/app/src
+      - ./frontend:/app/src
       - ./frontend/public:/app/public
       - ./frontend/package.json:/app/package.json
       - /app/node_modules
