@@ -1,0 +1,22 @@
+info:
+  contact: {}
+paths:
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user to database
+      produces:
+      - application/json
+      responses: {}
+      summary: Register user
+  /dev/status:
+    get:
+      consumes:
+      - application/json
+      description: Dev test for backend
+      produces:
+      - application/json
+      responses: {}
+      summary: Test for life
+swagger: "2.0"

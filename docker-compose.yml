@@ -3,8 +3,13 @@ services:
     build: ./backend
     container_name: bytecrate-backend
     environment:
-      DB_URL: postgres://postgres:postgres@db:5432/bytecrate?sslmode=disable
-
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: bytecrate
+      JWT_SECRET: super-secret
+      PORT: 8080
     ports:
       - "8080:8080"
     depends_on:
@@ -14,7 +19,7 @@ services:
     build: ./frontend
     container_name: bytecrate-frontend
     volumes:
-      - ./frontend/src:/app/src
+      - ./frontend:/app/src
       - ./frontend/public:/app/public
       - ./frontend/package.json:/app/package.json
       - /app/node_modules
