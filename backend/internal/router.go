@@ -16,13 +16,26 @@ import (
 func NewRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:5173"}
+	corsConfig.AllowOrigins = []string{
+		"http://localhost:5173",
+		"http://127.0.0.1:5173",
+		"http://localhost:3000",
+		"http://127.0.0.1:3000",
+	}
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}
+	corsConfig.ExposeHeaders = []string{"Content-Length", "Authorization"}
+	corsConfig.AllowCredentials = true
 
 	r.Use(cors.New(corsConfig))
 	api := r.Group("/api")
 	auth.RegisterAuthRoutes(api, db)
-	files.RegisterFilesRoutes(api)
-	dev.RegisterDevRoutes(api)
+
+	// Protected routes with auth middleware
+	protected := api.Group("")
+	protected.Use(auth.AuthMiddleware())
+	files.RegisterFilesRoutes(protected)
+	dev.RegisterDevRoutes(protected)
 
 	docs.SwaggerInfo.BasePath = "/api/"
 

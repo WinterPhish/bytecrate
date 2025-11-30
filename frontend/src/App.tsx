@@ -7,21 +7,27 @@ import UploadPage from './pages/Upload'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import HomePage from './pages/Home'
+import { AuthProvider } from './hooks/AuthContext'
+import ProtectedRoute from './hooks/ProtectedRoute'
 
 function App() {
   return (
-        <Router>
+    <AuthProvider>
+      <Router>
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/files" element={<FilesPage />} />
-                <Route path="/upload" element={<UploadPage />} />
-                <Route path="/files" element={<FilesPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                <Route path="/account" element={<ProtectedRoute> <AccountPage /> </ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute>  <Dashboard /> </ProtectedRoute>} />
+                <Route path="/files" element={<ProtectedRoute> <FilesPage /> </ProtectedRoute>} />
+                <Route path="/upload" element={<ProtectedRoute> <UploadPage /> </ProtectedRoute>} />
+                <Route path="/files" element={<ProtectedRoute> <FilesPage /> </ProtectedRoute>} />
+
             </Routes>
         </Router>
+    </AuthProvider>
   )
 }
 

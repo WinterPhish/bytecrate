@@ -21,3 +21,14 @@ export async function register(email: string, password: string) {
 
   return res.json();
 }
+
+export async function authenticatedFetch(url: string, options: RequestInit = {}) {
+  const token = localStorage.getItem("token");
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+}
