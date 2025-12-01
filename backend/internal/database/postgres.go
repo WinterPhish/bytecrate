@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
 func Connect() *gorm.DB {
 	host := getEnv("DB_HOST", "postgres")
 	port := getEnv("DB_PORT", "5432")
@@ -29,6 +31,8 @@ func Connect() *gorm.DB {
 	if err := db.AutoMigrate(&models.User{}); err != nil {
 		log.Fatalf("auto migrate failed: %v", err)
 	}
+
+	DB = db
 
 	return db
 }
