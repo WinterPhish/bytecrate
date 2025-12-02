@@ -3,11 +3,12 @@ package models
 import "time"
 
 type File struct {
-	ID        uint `gorm:"primaryKey"`
-	UserID    uint `gorm:"index"`
-	Name      string
-	Path      string
-	Size      int64
-	Type      string
-	CreatedAt time.Time
+	ID          uint      `json:"id"`
+	UserID      uint      `json:"user_id"`
+	Filename    string    `json:"filename"`
+	ContentType string    `json:"content_type"`
+	SizeBytes   int64     `json:"size_bytes"`
+	Path        string    `json:"path"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

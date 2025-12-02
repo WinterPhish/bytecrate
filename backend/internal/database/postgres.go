@@ -1,7 +1,6 @@
 package database
 
 import (
-	"bytecrate/internal/models"
 	"fmt"
 	"log"
 	"os"
@@ -27,10 +26,7 @@ func Connect() *gorm.DB {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	// Auto-migrate models
-	if err := db.AutoMigrate(&models.User{}); err != nil {
-		log.Fatalf("auto migrate failed: %v", err)
-	}
+	// DO NOT AUTOMIGRATE MODELS
 
 	DB = db
 

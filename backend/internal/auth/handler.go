@@ -49,7 +49,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	user := &models.User{
 		Email:    body.Email,
-		Password: string(hashed),
+		PasswordHash: string(hashed),
 	}
 
 	if err := h.Repo.CreateUser(user); err != nil {
@@ -86,7 +86,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)) != nil {
+	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password)) != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
 		return
 	}

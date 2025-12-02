@@ -42,11 +42,11 @@ func UploadFile(c *gin.Context) {
 
 	// Save file metadata in database
 	fileRecord := models.File{
-		UserID: userID,
-		Name:   fileHeader.Filename,
-		Path:   filePath,
-		Size:   fileHeader.Size,
-		Type:   fileHeader.Header.Get("Content-Type"),
+		UserID:      userID,
+		Filename:    fileHeader.Filename,
+		Path:        filePath,
+		SizeBytes:   fileHeader.Size,
+		ContentType: fileHeader.Header.Get("Content-Type"),
 	}
 
 	database.DB.Create(&fileRecord)

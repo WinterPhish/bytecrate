@@ -13,8 +13,11 @@ type LoginRequest struct {
 }
 
 type User struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	Email     string    `gorm:"uniqueIndex;not null" json:"email"`
-	Password  string    `gorm:"not null" json:"-"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+	ID                uint      `json:"id"`
+	Email             string    `json:"email"`
+	PasswordHash      string    `json:"-"` // never return
+	Username          string    `json:"username"`
+	StorageQuotaBytes int64     `json:"storage_quota_bytes"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
