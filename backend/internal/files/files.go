@@ -15,6 +15,8 @@ import (
 func RegisterFilesRoutes(r *gin.RouterGroup) {
 	files := r.Group("/files")
 	files.POST("/upload", UploadFile)
+	files.GET("/list/:userid/", ListFiles)
+	files.GET("/download/:id", DownloadFile)
 }
 
 func UploadFile(c *gin.Context) {
@@ -55,4 +57,41 @@ func UploadFile(c *gin.Context) {
 		"message": "uploaded",
 		"file":    fileRecord,
 	})
+}
+
+// TODO : MAKE USERID PARAM OPTIONAL AND ONLY ALLOW IF ADMIN
+
+func ListFiles(c *gin.Context) {
+	userID := c.GetInt("userID")
+
+	var files []models.File
+	if err := database.DB.Where("user_id = ?", userID).
+		Order("created_at DESC").
+		Find(&files).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch files"})
+		return
+	}
+
+	c.JSON(http.StatusOK, files)
+}
+
+func DownloadFile(c *gin.Context) {
+	db := database.DB
+	userID := c.GetInt("userID")
+	fileID := c.Param("id")
+
+	var file models.File
+	if err := db.Where("id = ? AND user_id = ?", fileID, userID).First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	if _, err := os.Stat(file.Path); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File missing from server"})
+		return
+	}
+
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file.Filename))
+	c.Header("Content-Type", file.ContentType)
+	c.File(file.Path)
 }
