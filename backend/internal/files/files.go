@@ -15,7 +15,7 @@ import (
 func RegisterFilesRoutes(r *gin.RouterGroup) {
 	files := r.Group("/files")
 	files.POST("/upload", UploadFile)
-	files.GET("/list/:userid/", ListFiles)
+	files.GET("/list/", ListFiles)
 	files.GET("/download/:id", DownloadFile)
 }
 
@@ -42,6 +42,8 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("Saved file to ", filePath)
+
 	// Save file metadata in database
 	fileRecord := models.File{
 		UserID:      userID,
@@ -62,12 +64,11 @@ func UploadFile(c *gin.Context) {
 // TODO : MAKE USERID PARAM OPTIONAL AND ONLY ALLOW IF ADMIN
 
 func ListFiles(c *gin.Context) {
-	userID := c.GetInt("userID")
+	userID := c.GetUint("userID")
+	fmt.Println("Listing files for user: ", userID)
 
 	var files []models.File
-	if err := database.DB.Where("user_id = ?", userID).
-		Order("created_at DESC").
-		Find(&files).Error; err != nil {
+	if err := database.DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&files).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch files"})
 		return
 	}
@@ -77,8 +78,9 @@ func ListFiles(c *gin.Context) {
 
 func DownloadFile(c *gin.Context) {
 	db := database.DB
-	userID := c.GetInt("userID")
+	userID := c.GetUint("userID")
 	fileID := c.Param("id")
+	fmt.Println("User ", userID, " downloading file ", fileID)
 
 	var file models.File
 	if err := db.Where("id = ? AND user_id = ?", fileID, userID).First(&file).Error; err != nil {

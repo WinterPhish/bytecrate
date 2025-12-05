@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { uploadFile } from "../api/upload";
+import { uploadFile } from "../api/files";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
