@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	db := database.Connect()
-	router := internal.NewRouter(db)
+	database.Connect()
+	router := internal.NewRouter()
 
 	port := os.Getenv("PORT")
 	if port == "" {

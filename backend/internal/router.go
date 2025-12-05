@@ -10,10 +10,9 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm"
 )
 
-func NewRouter(db *gorm.DB) *gin.Engine {
+func NewRouter() *gin.Engine {
 	r := gin.Default()
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{
@@ -29,7 +28,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 
 	r.Use(cors.New(corsConfig))
 	api := r.Group("/api")
-	auth.RegisterAuthRoutes(api, db)
+	auth.RegisterAuthRoutes(api)
 
 	// Protected routes with auth middleware
 	protected := api.Group("")

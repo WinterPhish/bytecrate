@@ -3,8 +3,8 @@ package dev
 import "github.com/gin-gonic/gin"
 
 func RegisterDevRoutes(r *gin.RouterGroup) {
-	files := r.Group("/dev")
-	files.GET("/status", StatusCheck)
+	dev := r.Group("/dev")
+	dev.GET("/status", StatusCheck)
 }
 
 //

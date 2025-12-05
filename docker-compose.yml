@@ -10,6 +10,8 @@ services:
       DB_NAME: bytecrate
       JWT_SECRET: super-secret
       PORT: 8080
+    volumes:
+      - ./uploads:/app/uploads
     ports:
       - "8080:8080"
     depends_on:
@@ -18,11 +20,6 @@ services:
   frontend:
     build: ./frontend
     container_name: bytecrate-frontend
-    volumes:
-      - ./frontend:/app/src
-      - ./frontend/public:/app/public
-      - ./frontend/package.json:/app/package.json
-      - /app/node_modules
     environment:
       WATCHPACK_POLLING: true
     ports:
@@ -41,6 +38,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
 
 volumes:
   pgdata:

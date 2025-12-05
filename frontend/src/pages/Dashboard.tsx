@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { authenticatedFetch } from "../api/auth";
 import { useState, useEffect } from "react";
+import axios from "axios";
+import api from "../api/axios";
 
 type StatusResponse = {
   status: string;
@@ -11,23 +12,33 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    authenticatedFetch('http://localhost:8080/api/dev/status')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error response');
+useEffect(() => {
+  let isMounted = true;
+
+  api.get("/dev/status")
+    .then((res) => {
+      if (isMounted) {
+        setData(res.data);
+        setLoading(false);
+      }
+    })
+    .catch((err: unknown) => {
+      if (isMounted) {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data || err.message);
+        } else if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(new Error("Unknown error occurred"));
         }
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
         setLoading(false);
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
+      }
+    });
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
 
   if (error) {
   return <div>Error: {error.message}</div>;
