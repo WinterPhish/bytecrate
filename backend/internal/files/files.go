@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -29,12 +30,12 @@ func UploadFile(c *gin.Context) {
 	}
 
 	// Create per-user directory
-	userDir := filepath.Join("uploads", fmt.Sprint(userID))
-	os.MkdirAll(userDir, 0755)
+	saveDir := "/app/uploads/" + strconv.Itoa(int(userID))
+	os.MkdirAll(saveDir, 0755)
 
 	// Generate filename
-	filename := fmt.Sprintf("%d_%s", time.Now().Unix(), fileHeader.Filename)
-	filePath := filepath.Join(userDir, filename)
+	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), fileHeader.Filename)
+	filePath := filepath.Join(saveDir, fileName)
 
 	// Save to disk
 	if err := c.SaveUploadedFile(fileHeader, filePath); err != nil {
@@ -89,6 +90,8 @@ func DownloadFile(c *gin.Context) {
 	}
 
 	if _, err := os.Stat(file.Path); os.IsNotExist(err) {
+		abs, _ := filepath.Abs(file.Path)
+		fmt.Println("DEBUG: Cannot find file. DB path =", file.Path, "Absolute =", abs)
 		c.JSON(http.StatusNotFound, gin.H{"error": "File missing from server"})
 		return
 	}
