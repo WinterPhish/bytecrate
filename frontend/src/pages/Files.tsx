@@ -25,7 +25,7 @@ export default function FileList() {
 
   const downloadFile = async (id: number, filename: string) => {
     try {
-      const res = await api.get(`/files//download/${id}`, {
+      const res = await api.get(`/files/download/${id}`, {
         responseType: "blob",
       });
 
