@@ -48,7 +48,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	user := &models.User{
-		Email:    body.Email,
+		Email:        body.Email,
+		Username:     body.Email,
 		PasswordHash: string(hashed),
 	}
 
@@ -66,8 +67,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"token": token,
 		"user": gin.H{
-			"id":    user.ID,
-			"email": user.Email,
+			"id":       user.ID,
+			"email":    user.Email,
+			"username": user.Username,
 		},
 	})
 }
@@ -100,8 +102,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 		"user": gin.H{
-			"id":    user.ID,
-			"email": user.Email,
+			"id":       user.ID,
+			"email":    user.Email,
+			"username": user.Username,
 		},
 	})
 }
