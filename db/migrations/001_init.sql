@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     username VARCHAR(100) UNIQUE NOT NULL,
-    storage_quota_bytes BIGINT NOT NULL DEFAULT (1024 * 1024 * 1024),
+    storage_quota_bytes_used BIGINT NOT NULL DEFAULT 0,
+    storage_quota_bytes BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

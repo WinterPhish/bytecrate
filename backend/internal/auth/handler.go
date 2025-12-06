@@ -48,9 +48,10 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	user := &models.User{
-		Email:        body.Email,
-		Username:     body.Email,
-		PasswordHash: string(hashed),
+		Email:             body.Email,
+		Username:          body.Email,
+		PasswordHash:      string(hashed),
+		StorageQuotaBytes: 1073741824, // 1 GB
 	}
 
 	if err := h.Repo.CreateUser(user); err != nil {

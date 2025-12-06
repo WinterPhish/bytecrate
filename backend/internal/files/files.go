@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func RegisterFilesRoutes(r *gin.RouterGroup) {
@@ -52,6 +53,13 @@ func UploadFile(c *gin.Context) {
 		Path:        filePath,
 		SizeBytes:   fileHeader.Size,
 		ContentType: fileHeader.Header.Get("Content-Type"),
+	}
+
+	if err := database.DB.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("storage_quota_bytes_used", gorm.Expr("storage_quota_bytes_used + ?", fileHeader.Size)).
+		Error; err != nil {
+		return
 	}
 
 	database.DB.Create(&fileRecord)
