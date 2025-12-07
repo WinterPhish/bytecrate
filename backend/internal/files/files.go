@@ -30,6 +30,25 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
+	var user models.User
+
+	if err := database.DB.Where("id = ?", userID).Order("created_at DESC").Find(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch files"})
+		return
+	}
+
+	if fileHeader.Size > user.StorageQuotaBytes {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "file size exceeds quota limit"})
+		return
+	}
+
+	if user.StorageQuotaBytesUsed+fileHeader.Size > user.StorageQuotaBytes {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "upload would exceed your storage quota"})
+		return
+	}
+
+	fmt.Println("Storage used: ", user.StorageQuotaBytesUsed, " / ", user.StorageQuotaBytes)
+
 	// Create per-user directory
 	saveDir := "/app/uploads/" + strconv.Itoa(int(userID))
 	os.MkdirAll(saveDir, 0755)

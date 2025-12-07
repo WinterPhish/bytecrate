@@ -13,11 +13,12 @@ type LoginRequest struct {
 }
 
 type User struct {
-	ID                uint      `json:"id"`
-	Email             string    `json:"email"`
-	PasswordHash      string    `json:"-"` // never return
-	Username          string    `json:"username"`
-	StorageQuotaBytes int64     `json:"storage_quota_bytes"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	ID                    uint      `json:"id"`
+	Email                 string    `json:"email"`
+	PasswordHash          string    `json:"-"` // never return
+	Username              string    `json:"username"`
+	StorageQuotaBytesUsed int64     `json:"storage_quota_bytes_used"`
+	StorageQuotaBytes     int64     `json:"storage_quota_bytes"`
+	CreatedAt             time.Time `json:"created_at"`
+	UpdatedAt             time.Time `json:"updated_at"`
 }
