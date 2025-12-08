@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,9 @@ func RegisterFilesRoutes(r *gin.RouterGroup) {
 	files := r.Group("/files")
 	files.POST("/upload", UploadFile)
 	files.GET("/list/", ListFiles)
-	files.GET("/download/:id", DownloadFile)
+	files.DELETE("/:id", DeleteFile)
+	files.PUT("/:id/rename", RenameFile)
+	files.GET("/:id/download", DownloadFile)
 }
 
 func UploadFile(c *gin.Context) {
@@ -89,7 +92,70 @@ func UploadFile(c *gin.Context) {
 	})
 }
 
-// TODO : MAKE USERID PARAM OPTIONAL AND ONLY ALLOW IF ADMIN
+func DeleteFile(c *gin.Context) {
+	db := database.DB
+	userID := c.GetUint("userID")
+	fileID := c.Param("id")
+
+	var file models.File
+	if err := db.Where("id = ? AND user_id = ?", fileID, userID).
+		First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	// Delete file from disk if exists
+	if _, err := os.Stat(file.Path); err == nil {
+		_ = os.Remove(file.Path)
+	}
+
+	// Remove DB record
+	if err := db.Delete(&file).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete from DB"})
+		return
+	}
+
+	// Subtract quota
+	db.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("storage_quota_bytes_used",
+			gorm.Expr("storage_quota_bytes_used - ?", file.SizeBytes),
+		)
+
+	c.JSON(http.StatusOK, gin.H{"message": "File deleted"})
+}
+
+type RenameRequest struct {
+	Filename string `json:"filename"`
+}
+
+func RenameFile(c *gin.Context) {
+	db := database.DB
+	userID := c.GetUint("userID")
+	fileID := c.Param("id")
+
+	var body RenameRequest
+	if err := c.BindJSON(&body); err != nil || strings.TrimSpace(body.Filename) == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filename"})
+		return
+	}
+
+	var file models.File
+	if err := db.Where("id = ? AND user_id = ?", fileID, userID).
+		First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	file.Filename = body.Filename
+
+	if err := db.Save(&file).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to rename"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Renamed", "file": file})
+}
 
 func ListFiles(c *gin.Context) {
 	userID := c.GetUint("userID")

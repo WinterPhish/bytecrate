@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import axios from "axios";
 
 interface FileEntry {
   id: number;
@@ -23,9 +24,36 @@ export default function FileList() {
     }
   };
 
+  const deleteFile = async (id: number) => {
+    try {
+      const res = await api.delete(`/files/${id}`);
+      return res.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error || "Delete failed");
+      }
+      throw err;
+    }
+  }
+
+  const renameFile = async (id: number, newName: string) => {
+    try {
+      const res = await api.put(`/files/${id}/rename`, {
+        filename: newName,
+      });
+      return res.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error || "Rename failed");
+    }
+    throw err;
+    }
+  }
+
+  // Possible enhancement
   const downloadFile = async (id: number, filename: string) => {
     try {
-      const res = await api.get(`/files/download/${id}`, {
+      const res = await api.get(`/files/${id}/download`, {
         responseType: "blob",
       });
 
@@ -66,6 +94,41 @@ export default function FileList() {
               onClick={() => downloadFile(file.id, file.filename)}
             >
               Download
+            </button>
+
+            {/* Rename */}
+            <button
+              style={{ marginLeft: "8px" }}
+              onClick={async () => {
+                const newName = prompt("New filename:", file.filename);
+                if (!newName) return;
+
+                try {
+                  await renameFile(file.id, newName);
+                  await fetchFiles(); // auto refresh
+                } catch (err) {
+                  alert("Rename failed: " + err);
+                }
+              }}
+            >
+              Rename
+            </button>
+
+            {/* Delete */}
+            <button
+              style={{ marginLeft: "8px", color: "red" }}
+              onClick={async () => {
+                if (!confirm("Delete this file?")) return;
+
+                try {
+                  await deleteFile(file.id);
+                  await fetchFiles(); // auto refresh
+                } catch (err) {
+                  alert("Delete failed: " + err);
+                }
+              }}
+            >
+              Delete
             </button>
           </li>
         ))}
