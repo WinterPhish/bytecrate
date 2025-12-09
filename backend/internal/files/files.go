@@ -22,6 +22,7 @@ func RegisterFilesRoutes(r *gin.RouterGroup) {
 	files.DELETE("/:id", DeleteFile)
 	files.PUT("/:id/rename", RenameFile)
 	files.GET("/:id/download", DownloadFile)
+	files.GET("/:id/preview", PreviewFile)
 }
 
 func UploadFile(c *gin.Context) {
@@ -168,6 +169,28 @@ func ListFiles(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, files)
+}
+
+func PreviewFile(c *gin.Context) {
+	db := database.DB
+	userID := c.GetUint("userID")
+	fileID := c.Param("id")
+
+	var file models.File
+	if err := db.Where("id = ? AND user_id = ?", fileID, userID).First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	if _, err := os.Stat(file.Path); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File missing from server"})
+		return
+	}
+
+	// Serve inline preview
+	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", file.Filename))
+	c.Header("Content-Type", file.ContentType)
+	c.File(file.Path)
 }
 
 func DownloadFile(c *gin.Context) {
