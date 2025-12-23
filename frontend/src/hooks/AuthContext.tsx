@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
   token: string | null;
@@ -22,6 +22,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("token");
     setToken(null);
   };
+
+  useEffect(() => {
+    // listen for token updates from axios interceptor (refresh)
+    const handler = (e: Event) => {
+      // event may be CustomEvent with detail = token
+      const ce = e as CustomEvent;
+      const t = ce?.detail ?? null;
+      if (t) {
+        setToken(t);
+        localStorage.setItem("token", t);
+      } else {
+        setToken(null);
+        localStorage.removeItem("token");
+      }
+    };
+    window.addEventListener("auth:token", handler as EventListener);
+    return () => window.removeEventListener("auth:token", handler as EventListener);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, login, logout }}>
